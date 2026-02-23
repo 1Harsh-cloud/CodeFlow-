@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Light theme - attention-grabbing hackathon palette */
+  --codeflow-bg: #f8fafc;
+  --codeflow-surface: #ffffff;
+  --codeflow-border: #e2e8f0;
+  --codeflow-text: #0f172a;
+  --codeflow-text-muted: #475569;
+  --codeflow-accent: #6366f1;
+  --codeflow-accent-hover: #4f46e5;
+  --codeflow-play-accent: #f59e0b;
+  --codeflow-play-accent-hover: #d97706;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  background: linear-gradient(135deg, #faf5ff 0%, #f8fafc 40%, #f0f9ff 100%);
+  color: var(--codeflow-text);
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Monaco Editor container */
+.monaco-container {
+  border-radius: 0.5rem;
+  overflow: hidden;
+  border: 1px solid var(--codeflow-border);
+}
+
+.monaco-container .monaco-editor {
+  padding-top: 12px;
+}
+
+/* Line-by-line explanation scrollbar */
+.line-by-line-scroll::-webkit-scrollbar {
+  width: 10px;
+}
+.line-by-line-scroll::-webkit-scrollbar-track {
+  background: #e2e8f0;
+  border-radius: 5px;
+}
+.line-by-line-scroll::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 5px;
+}
+.line-by-line-scroll::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* 3D Carousel Flashcards */
+.carousel-3d-wrapper { perspective: 2500px; position: relative; height: 480px; overflow: visible; }
+.carousel-3d { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; display: flex; align-items: center; justify-content: center; }
+.carousel-3d-card { position: absolute; width: 450px; height: 300px; left: 50%; top: 50%; margin-left: -225px; margin-top: -150px; background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); cursor: pointer; transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); transform-style: preserve-3d; backface-visibility: hidden; }
+.carousel-3d-card.center { transform: translateX(0) translateZ(0) rotateY(0deg) scale(1.1); z-index: 100; opacity: 1; filter: blur(0); }
+.carousel-3d-card.left-1 { transform: translateX(-380px) translateZ(-150px) rotateY(35deg) scale(0.85); z-index: 50; opacity: 0.8; filter: blur(1px); }
+.carousel-3d-card.left-2 { transform: translateX(-650px) translateZ(-300px) rotateY(45deg) scale(0.7); z-index: 40; opacity: 0.5; filter: blur(2px); }
+.carousel-3d-card.right-1 { transform: translateX(380px) translateZ(-150px) rotateY(-35deg) scale(0.85); z-index: 50; opacity: 0.8; filter: blur(1px); }
+.carousel-3d-card.right-2 { transform: translateX(650px) translateZ(-300px) rotateY(-45deg) scale(0.7); z-index: 40; opacity: 0.5; filter: blur(2px); }
+.carousel-3d-card.hidden { transform: translateX(0) translateZ(-500px) scale(0.5); opacity: 0; z-index: 1; pointer-events: none; }
+.carousel-3d-card.flipped .carousel-3d-front { transform: rotateY(180deg); }
+.carousel-3d-card.flipped .carousel-3d-back { transform: rotateY(0deg); }
+.carousel-3d-front, .carousel-3d-back { position: absolute; inset: 0; backface-visibility: hidden; transition: transform 0.6s; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem 2.5rem; border-radius: 20px; }
+.carousel-3d-back { transform: rotateY(180deg); background: linear-gradient(135deg, #38bdf8 0%, #ec4899 100%); color: white; }
+.carousel-3d-card.left-1:hover, .carousel-3d-card.left-2:hover, .carousel-3d-card.right-1:hover, .carousel-3d-card.right-2:hover { filter: blur(0) !important; opacity: 1 !important; }
+
+/* Ready to Play - floating gamepad (reference: 3s ease-in-out, -20px) */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}

@@ -1,0 +1,3 @@
+Paste this in your terminal (PowerShell or CMD):
+
+powershell -ExecutionPolicy Bypass -File "c:\Users\HARSH JAIN\Desktop\Hackathon\frontend\run.ps1"

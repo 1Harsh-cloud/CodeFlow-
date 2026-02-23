@@ -1,0 +1,17 @@
+# Environment (API keys - never commit!)
+.env
+backend/.env
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+
+# Node
+node_modules/
+
+# Build
+dist/
+build/
