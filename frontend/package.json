@@ -10,7 +10,6 @@
     "start": "node server.cjs"
   },
   "dependencies": {
-    "serve": "^14.2.4",
     "@monaco-editor/react": "^4.6.0",
     "@react-three/drei": "^9.92.7",
     "@react-three/fiber": "^8.15.12",
