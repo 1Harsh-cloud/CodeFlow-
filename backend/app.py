@@ -501,13 +501,21 @@ def codebase_chat():
 
 
 # --- GitHub OAuth (Connect GitHub for repo picker) ---
+def _backend_url():
+    """Base URL for backend - required for correct redirect_uri behind proxies (Railway, etc)."""
+    url = os.getenv("BACKEND_URL", "").strip()
+    if url:
+        return url.rstrip("/")
+    return request.host_url.rstrip("/")
+
+
 @app.route("/api/github/auth-url", methods=["GET"])
 def github_auth_url():
     """Return GitHub OAuth URL for 'Connect GitHub' button."""
     if not GITHUB_CLIENT_ID:
         return jsonify({"error": "GitHub OAuth not configured. Add GITHUB_CLIENT_ID to .env"}), 500
-    # Frontend will open this URL (same-origin or popup)
-    base_url = request.host_url.rstrip("/")
+    # Use explicit BACKEND_URL for redirect_uri (request.host_url can be wrong behind Railway proxy)
+    base_url = _backend_url()
     redirect_uri = f"{base_url}{GITHUB_CALLBACK_PATH}"
     url = (
         f"https://github.com/login/oauth/authorize"
@@ -527,7 +535,7 @@ def github_callback():
     if not GITHUB_CLIENT_ID or not GITHUB_CLIENT_SECRET:
         return redirect(_frontend_url() + "?github_error=config")
 
-    redirect_uri = f"{request.host_url.rstrip('/')}{GITHUB_CALLBACK_PATH}"
+    redirect_uri = f"{_backend_url()}{GITHUB_CALLBACK_PATH}"
     try:
         import requests
         r = requests.post(
