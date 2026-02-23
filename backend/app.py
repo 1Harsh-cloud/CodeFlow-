@@ -1127,44 +1127,63 @@ PISTON_URLS = [
 JUDGE0_LANG_IDS = {"c": 50, "cpp": 54, "java": 91}  # Judge0 CE language IDs
 
 
+def _parse_judge0_response(d):
+    """Parse Judge0 API response into our format."""
+    stdout = d.get("stdout") or ""
+    stderr = d.get("stderr") or ""
+    compile_out = d.get("compile_output") or ""
+    status = d.get("status", {})
+    status_id = status.get("id", 0)
+    success = status_id in (3, 4)
+    if status_id == 6:
+        return {"success": False, "output": compile_out.strip() or "(compile error)", "error": compile_out}
+    out = (stdout + stderr).strip() or "(no output)"
+    return {"success": success, "output": out, "error": stderr if status_id not in (3, 4) else None}
+
+
 def _run_via_judge0(language, code, stdin_text=""):
-    """Run via Judge0 CE - RapidAPI (free) or ce.judge0.com."""
+    """Run via Judge0 CE - RapidAPI or ce.judge0.com (free public instance)."""
     if language not in JUDGE0_LANG_IDS:
         return None
     lid = JUDGE0_LANG_IDS[language]
     rapid_key = (os.getenv("RAPIDAPI_KEY") or "").strip()
     auth_token = (os.getenv("JUDGE0_AUTH_TOKEN") or "").strip()
+    payload = {"source_code": code, "language_id": lid, "stdin": stdin_text or ""}
+
+    # Try RapidAPI first if key exists
     if rapid_key:
         url = "https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=false&wait=true"
         headers = {"Content-Type": "application/json", "X-RapidAPI-Key": rapid_key, "x-rapidapi-host": "judge0-ce.p.rapidapi.com"}
-    else:
-        url = "https://ce.judge0.com/submissions?base64_encoded=false&wait=true"
-        headers = {"Content-Type": "application/json"}
-        if auth_token:
-            headers["X-Auth-Token"] = auth_token
+        try:
+            import requests
+            r = requests.post(url, json=payload, headers=headers, timeout=30)
+            if r.status_code in (200, 201):
+                return _parse_judge0_response(r.json())
+            if r.status_code != 403:
+                print(f"[judge0] RapidAPI HTTP {r.status_code}: {r.text[:300]}")
+            # 403 = not subscribed; fall through to ce.judge0.com
+        except Exception as e:
+            print(f"[judge0] RapidAPI error: {e}")
+
+    # Fallback: free public instance at ce.judge0.com (no subscription needed)
+    url = "https://ce.judge0.com/submissions?base64_encoded=false&wait=true"
+    headers = {"Content-Type": "application/json"}
+    if auth_token:
+        headers["X-Auth-Token"] = auth_token
     try:
         import requests
         r = requests.post(
             url,
-            json={"source_code": code, "language_id": lid, "stdin": stdin_text or ""},
+            json=payload,
             headers=headers,
             timeout=30,
         )
         if r.status_code not in (200, 201):
+            print(f"[judge0] ce.judge0.com HTTP {r.status_code}: {r.text[:500]}")
             return None
-        d = r.json()
-        stdout = d.get("stdout") or ""
-        stderr = d.get("stderr") or ""
-        compile_out = d.get("compile_output") or ""
-        status = d.get("status", {})
-        status_id = status.get("id", 0)
-        # 3=Accepted, 4=Wrong Answer, 5=Time Limit, 6=Compilation Error, etc.
-        success = status_id in (3, 4)  # 3=OK, 4=WA still ran
-        if status_id == 6:
-            return {"success": False, "output": compile_out.strip() or "(compile error)", "error": compile_out}
-        out = (stdout + stderr).strip() or "(no output)"
-        return {"success": success, "output": out, "error": stderr if status_id not in (3, 4) else None}
-    except Exception:
+        return _parse_judge0_response(r.json())
+    except Exception as e:
+        print(f"[judge0] Error: {e}")
         return None
 
 
