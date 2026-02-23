@@ -25,10 +25,9 @@ const mimeTypes = {
   '.map': 'application/json',
 };
 
-// Log on crash
+// Log but don't exit - let the server keep running
 process.on('uncaughtException', (err) => {
   console.error('Uncaught exception:', err);
-  process.exit(1);
 });
 
 const server = http.createServer((req, res) => {

@@ -12,19 +12,15 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-# Production stage - use serve (battle-tested for Railway/Render/Heroku)
+# Production stage - custom server (was starting successfully)
 FROM node:22-alpine
 
 WORKDIR /app
 
-# Copy built files
+# Copy built files and server
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/server.cjs ./
 
-# Install serve only (lightweight)
-RUN npm install -g serve
-
-# Railway injects PORT at runtime
 EXPOSE 3000
 
-# serve reads PORT from env automatically, -s for SPA fallback
-CMD ["sh", "-c", "serve -s dist -l ${PORT:-3000}"]
+CMD ["node", "server.cjs"]
