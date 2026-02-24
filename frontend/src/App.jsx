@@ -25,6 +25,13 @@ function App() {
   const [lineByLine, setLineByLine] = useState([])
   const [output, setOutput] = useState('')
   const [stdin, setStdin] = useState('')
+  // Separate state for Generate vs Explain - they should not share
+  const [generateCode, setGenerateCode] = useState('')
+  const [generateOutput, setGenerateOutput] = useState('')
+  const [generateStdin, setGenerateStdin] = useState('')
+  const [explainCode, setExplainCode] = useState('')
+  const [explainOutput, setExplainOutput] = useState('')
+  const [explainStdin, setExplainStdin] = useState('')
   const [gameHtml, setGameHtml] = useState('')
   const [gameDescription, setGameDescription] = useState('')
   const [gameHtmlToShow, setGameHtmlToShow] = useState('')
@@ -54,7 +61,7 @@ function App() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Explain failed')
       setLineByLine(data.lineByLine ?? [])
-      setCode(data.code ?? codeToExplain)
+      setExplainCode(data.code ?? codeToExplain)
     } catch (err) {
       setError(parseApiError(err))
     } finally {
@@ -74,7 +81,7 @@ function App() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Upload failed')
-      setCode(data.code)
+      setExplainCode(data.code)
       setLineByLine(data.lineByLine ?? [])
     } catch (err) {
       setError(parseApiError(err))
@@ -94,8 +101,8 @@ function App() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Generate failed')
-      setCode(data.code)
-      setLineByLine([])
+      setGenerateCode(data.code)
+      setGenerateOutput('')
     } catch (err) {
       setError(parseApiError(err))
     } finally {
@@ -182,27 +189,27 @@ function App() {
     }
   }
 
-  const handleExecute = async (lang = 'python') => {
+  const doExecute = async (codeVal, stdinVal, setOutputFn, lang = 'python') => {
     setError('')
-    setOutput('')
+    setOutputFn('')
     if (lang === 'html') {
-      const blob = new Blob([code], { type: 'text/html' })
+      const blob = new Blob([codeVal], { type: 'text/html' })
       const url = URL.createObjectURL(blob)
       window.open(url, '_blank')
-      setOutput('Preview opened in new tab')
+      setOutputFn('Preview opened in new tab')
       return
     }
     if (lang === 'css') {
-      const html = `<!DOCTYPE html><html><head><style>${code}</style></head><body><h1>Heading</h1><p>Paragraph</p><div class="box">Box</div><button>Button</button></body></html>`
+      const html = `<!DOCTYPE html><html><head><style>${codeVal}</style></head><body><h1>Heading</h1><p>Paragraph</p><div class="box">Box</div><button>Button</button></body></html>`
       const blob = new Blob([html], { type: 'text/html' })
       const url = URL.createObjectURL(blob)
       window.open(url, '_blank')
-      setOutput('Preview opened in new tab')
+      setOutputFn('Preview opened in new tab')
       return
     }
-    if ((code.includes('input(') || code.includes('input (')) && !stdin.trim()) {
+    if ((codeVal.includes('input(') || codeVal.includes('input (')) && !stdinVal.trim()) {
       setError('Input box is empty. This code uses input() — add values above (one per line), then run again.')
-      setOutput('Input box is empty. This code uses input() — add values in the Input section (one per line), then click Run Code again.')
+      setOutputFn('Input box is empty. This code uses input() — add values in the Input section (one per line), then click Run Code again.')
       return
     }
     setIsLoading(true)
@@ -210,22 +217,26 @@ function App() {
       const res = await fetch(`${API_BASE}/api/execute`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code, stdin, language: lang }),
+        body: JSON.stringify({ code: codeVal, stdin: stdinVal, language: lang }),
       })
       const data = await res.json()
       if (data.error) {
-        setOutput(data.error)
+        setOutputFn(data.error)
         setError(data.error)
       } else {
-        setOutput(data.output || '(no output)')
+        setOutputFn(data.output || '(no output)')
       }
     } catch (err) {
       setError(parseApiError(err))
-      setOutput(err.message)
+      setOutputFn(err.message)
     } finally {
       setIsLoading(false)
     }
   }
+
+  const handleExecute = async (lang = 'python') => doExecute(code, stdin, setOutput, lang)
+  const handleExecuteGenerate = async (lang = 'python') => doExecute(generateCode, generateStdin, setGenerateOutput, lang)
+  const handleExecuteExplain = async (lang = 'python') => doExecute(explainCode, explainStdin, setExplainOutput, lang)
 
   return (
     <div className="min-h-screen text-slate-800">
@@ -248,16 +259,16 @@ function App() {
           {activeTab === TABS.EXPLAIN && (
             <div className="col-span-full">
               <ExplainPanel
-                onExplain={() => handleExplain(code)}
+                onExplain={() => handleExplain(explainCode)}
                 onFileUpload={handleFileUpload}
-                onExecute={handleExecute}
+                onExecute={handleExecuteExplain}
                 onLanguageChange={setExplainLanguage}
                 language={explainLanguage}
-                code={code}
-                setCode={setCode}
-                output={output}
-                stdin={stdin}
-                onStdinChange={setStdin}
+                code={explainCode}
+                setCode={setExplainCode}
+                output={explainOutput}
+                stdin={explainStdin}
+                onStdinChange={setExplainStdin}
                 lineByLine={lineByLine}
                 isLoading={isLoading}
                 error={error}
@@ -270,14 +281,14 @@ function App() {
             <div className="col-span-full">
               <GeneratePanel
                 onGenerate={handleGenerate}
-                onExecute={handleExecute}
+                onExecute={handleExecuteGenerate}
                 onLanguageChange={setGenerateLanguage}
                 language={generateLanguage}
-                code={code}
-                setCode={setCode}
-                output={output}
-                stdin={stdin}
-                onStdinChange={setStdin}
+                code={generateCode}
+                setCode={setGenerateCode}
+                output={generateOutput}
+                stdin={generateStdin}
+                onStdinChange={setGenerateStdin}
                 isLoading={isLoading}
                 error={error}
               />

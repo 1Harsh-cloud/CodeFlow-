@@ -491,11 +491,14 @@ export default function MapPanel({ isLoading, error, setError }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...payload, reportLength }),
       })
-      const data = await res.json()
+      const data = await safeJson(res)
       if (!res.ok) throw new Error(data.error || 'Failed to generate report')
       setReport(data.report || '')
     } catch (e) {
-      setReportError(e.message)
+      const msg = e?.message?.toLowerCase?.()?.includes('failed to fetch') || e?.message?.toLowerCase?.()?.includes('network')
+        ? 'Cannot reach backend. On Vercel: set VITE_API_URL to your Railway URL. On Railway: add your frontend URL to CORS_ORIGINS.'
+        : e.message
+      setReportError(msg)
     } finally {
       setLoadingReport(false)
     }
