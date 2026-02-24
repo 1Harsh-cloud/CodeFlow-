@@ -49,7 +49,7 @@ Railway created a service from your repo. We need to point it to the **backend**
    - (Railway may auto-detect this for Python)
 
 5. Find **Start Command** (or **Custom Start**):
-   - Set to: `gunicorn app:app --bind 0.0.0.0:$PORT`
+   - Set to: `gunicorn app:app --bind 0.0.0.0:$PORT --timeout 120`
    - Railway provides `$PORT` – your app must use it
 
 6. Go to **Variables** (or **Environment**) and add:
@@ -84,7 +84,7 @@ Railway created a service from your repo. We need to point it to the **backend**
 4. Choose the **same repo**: CodeFlow-
 5. **Before deploying**, go to **Settings**:
 
-6. **Root Directory**: Set to `frontend`
+6. **Root Directory**: Set to `frontend` (REQUIRED - build fails with ENOENT package.json if not set!)
 
 7. **Build Command**: `npm install && npm run build`
    - (Railway may auto-detect for Vite)
@@ -130,7 +130,7 @@ In [GitHub Developer Settings](https://github.com/settings/developers) → your 
 | Step | What |
 |------|------|
 | 1 | Railway project + Backend service, Root = `backend` |
-| 2 | Backend: `gunicorn app:app --bind 0.0.0.0:$PORT` |
+| 2 | Backend: `gunicorn app:app --bind 0.0.0.0:$PORT --timeout 120` |
 | 3 | Backend env vars: ANTHROPIC_API_KEY, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET |
 | 4 | Backend public URL generated |
 | 5 | GitHub OAuth callback = `https://backend-url/api/github/callback` |
