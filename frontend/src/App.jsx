@@ -36,6 +36,9 @@ function App() {
   const [gameHtml, setGameHtml] = useState('')
   const [gameDescription, setGameDescription] = useState('')
   const [gameHtmlToShow, setGameHtmlToShow] = useState('')
+  const [playLineByLine, setPlayLineByLine] = useState([])
+  const [playLineByLineLoading, setPlayLineByLineLoading] = useState(false)
+  const [playLineByLineError, setPlayLineByLineError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [generateLanguage, setGenerateLanguage] = useState('python')
@@ -119,8 +122,24 @@ function App() {
     setGameDescription(prompt)
 
     if (presetKey && PRESET_GAMES[presetKey]) {
-      setGameHtml(PRESET_GAMES[presetKey])
-      setGameHtmlToShow(PRESET_GAMES[presetKey])
+      const html = PRESET_GAMES[presetKey]
+      setGameHtml(html)
+      setGameHtmlToShow(html)
+      setPlayLineByLine([])
+      setPlayLineByLineError('')
+      setPlayLineByLineLoading(true)
+      fetch(`${API_BASE}/api/explain`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: html }),
+      })
+        .then((r) => r.json())
+        .then((d) => {
+          if (d?.lineByLine?.length) setPlayLineByLine(d.lineByLine)
+          else setPlayLineByLineError(d?.error || 'Could not generate explanation')
+        })
+        .catch((e) => setPlayLineByLineError(e?.message || 'Request failed'))
+        .finally(() => setPlayLineByLineLoading(false))
       return
     }
 
@@ -142,6 +161,21 @@ function App() {
       if (data.html) {
         setGameHtml(data.html)
         setGameHtmlToShow(data.html)
+        setPlayLineByLine([])
+        setPlayLineByLineError('')
+        setPlayLineByLineLoading(true)
+        fetch(`${API_BASE}/api/explain`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code: data.html }),
+        })
+          .then((r) => r.json())
+          .then((d) => {
+            if (d?.lineByLine?.length) setPlayLineByLine(d.lineByLine)
+            else setPlayLineByLineError(d?.error || 'Could not generate explanation')
+          })
+          .catch((e) => setPlayLineByLineError(e?.message || 'Request failed'))
+          .finally(() => setPlayLineByLineLoading(false))
       }
     } catch (err) {
       setError(parseApiError(err))
@@ -370,8 +404,36 @@ function App() {
             }}
           >
             {activeTab === TABS.PLAY && gameHtml ? (
-              <div className="flex-1 min-h-0 flex flex-col p-6">
-                <GameOutputPanel html={gameHtmlToShow} description={gameDescription} gameCode={gameHtml} className="flex-1 min-h-0 flex flex-col" />
+              <div className="flex-1 min-h-0 flex flex-col p-6 overflow-auto">
+                <GameOutputPanel html={gameHtmlToShow} description={gameDescription} gameCode={gameHtml} className="flex-1 min-h-0 flex flex-col shrink-0" />
+                <div className="shrink-0 mt-4 rounded-2xl border border-slate-200/80 bg-white/60 backdrop-blur-sm shadow-xl overflow-hidden flex flex-col max-h-[400px] min-h-0">
+                  <div className="px-5 py-4 border-b border-slate-200/60 shrink-0">
+                    <h3 className="text-slate-800 font-semibold text-sm tracking-tight">Line-by-line explanation</h3>
+                    <p className="text-slate-500 text-xs mt-0.5">AI-powered breakdown of each line of your game code only</p>
+                  </div>
+                  {playLineByLine.length > 0 ? (
+                    <div className="line-by-line-scroll space-y-3 flex-1 min-h-0 overflow-y-auto p-4">
+                      {playLineByLine.map(({ line, code: lineCode, explanation }) => (
+                        <div key={line} className="p-4 rounded-xl bg-slate-100/80 border border-slate-200/50 shrink-0">
+                          <div className="flex gap-3 mb-2">
+                            <span className="flex items-center justify-center w-7 h-7 rounded-md bg-indigo-500/20 text-indigo-600 font-mono text-xs font-semibold shrink-0">L{line}</span>
+                            <code className="text-xs text-slate-800 font-mono break-words min-w-0 flex-1 leading-relaxed">{lineCode?.trim() || '(empty)'}</code>
+                          </div>
+                          <p className="text-sm text-slate-600 pl-10 leading-relaxed">{explanation}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : playLineByLineError ? (
+                    <div className="flex-1 flex items-center justify-center p-6 text-center">
+                      <p className="text-slate-600 text-sm">{playLineByLineError}</p>
+                    </div>
+                  ) : (
+                    <div className="flex-1 flex items-center justify-center p-6 text-center">
+                      <span className="inline-block w-6 h-6 border-2 border-indigo-500/30 border-t-indigo-600 rounded-full animate-spin mr-2" />
+                      <p className="text-slate-500 text-sm">Generating explanation… (20–45 sec)</p>
+                    </div>
+                  )}
+                </div>
               </div>
             ) : activeTab === TABS.PLAY && !gameHtml && !code.trim() ? (
               <ReadyToPlay />
@@ -384,22 +446,6 @@ function App() {
                   onStdinChange={setStdin}
                   showGameInput={!(activeTab === TABS.PLAY && !gameHtml && (code.includes('input(') || code.includes('input (')))}
                 />
-              </div>
-            )}
-            {lineByLine.length > 0 && (
-              <div className="p-6">
-                <h3 className="text-sm font-medium text-slate-600 mb-2">Line-by-line explanation</h3>
-                <div className="space-y-2 max-h-[400px] overflow-y-auto line-by-line-scroll">
-                  {lineByLine.map(({ line, code: lineCode, explanation }) => (
-                    <div key={line} className="p-3 rounded-lg bg-slate-50 border border-slate-200">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-mono text-indigo-600">L{line}</span>
-                        <code className="text-xs text-slate-700 truncate flex-1">{lineCode || '(empty)'}</code>
-                      </div>
-                      <p className="text-sm text-slate-600">{explanation}</p>
-                    </div>
-                  ))}
-                </div>
               </div>
             )}
           </div>

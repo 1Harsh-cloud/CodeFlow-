@@ -94,7 +94,7 @@ export default function PlayPanel({ onGenerateGame, onImprovePrompt, onRunGame, 
       {/* Section 2: After generation — Code first, then Run */}
       {gameHtml && (
         <div className="space-y-3 p-4 rounded-2xl border border-slate-200/80 bg-white/60 backdrop-blur-sm shadow-lg">
-          <h3 className="text-sm font-medium text-amber-800">Section 2 — Code generated ✓</h3>
+          <h3 className="text-sm font-medium text-amber-800">Code generated ✓</h3>
           {gameDescription && (
             <p className="text-xs text-slate-600">From: &quot;{gameDescription}&quot;</p>
           )}
