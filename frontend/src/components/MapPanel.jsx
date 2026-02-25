@@ -263,6 +263,7 @@ export default function MapPanel({ isLoading, error, setError }) {
   const [chatInput, setChatInput] = useState('')
   const [chatLoading, setChatLoading] = useState(false)
   const [chatError, setChatError] = useState('')
+  const [mapFullScreen, setMapFullScreen] = useState(false)
 
   const API_BASE = import.meta.env.VITE_API_URL || ''
 
@@ -325,6 +326,15 @@ export default function MapPanel({ isLoading, error, setError }) {
     if (githubToken) fetchRepos()
   }, [githubToken, fetchRepos])
 
+  useEffect(() => {
+    if (!mapFullScreen) return
+    const onEscape = (e) => {
+      if (e.key === 'Escape') setMapFullScreen(false)
+    }
+    document.addEventListener('keydown', onEscape)
+    return () => document.removeEventListener('keydown', onEscape)
+  }, [mapFullScreen])
+
   const loadMap = useCallback(async (payload) => {
     setIsLoadingMap(true)
     setMapError('')
@@ -356,6 +366,7 @@ export default function MapPanel({ isLoading, error, setError }) {
       const data = await safeJson(res)
       if (!res.ok) throw new Error(data.error || 'Failed to build map')
       setMapData(data)
+      if (data?.nodes?.length > 0) setMapFullScreen(true)
       if (data.filesWithContent && payload.formData) {
         setLastPayload(p => ({ ...p, files: data.filesWithContent }))
       } else if (data.filesWithContent) {
@@ -654,6 +665,30 @@ export default function MapPanel({ isLoading, error, setError }) {
         </div>
       </div>
 
+      {mapFullScreen && mapData?.nodes?.length > 0 && (
+        <div
+          className="fixed inset-0 z-[9999] flex flex-col bg-[#0a0e1a]"
+          role="dialog"
+          aria-modal="true"
+          aria-label="CodeFlow Graph (full screen)"
+        >
+          <button
+            type="button"
+            onClick={() => setMapFullScreen(false)}
+            className="fixed top-6 right-4 z-[10001] w-12 h-12 rounded-xl flex items-center justify-center bg-white/10 hover:bg-white/20 border border-white/20 text-white transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            aria-label="Close full screen"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+          <div className="flex-1 min-h-0">
+            <CodeFlowGraph nodes={mapData.nodes} edges={mapData.edges} isConnected={!!mapData} />
+          </div>
+        </div>
+      )}
+
       {(mapError || mapData) && (
         <div className="rounded-lg border border-slate-200 overflow-hidden">
           {mapError && (
@@ -682,8 +717,15 @@ export default function MapPanel({ isLoading, error, setError }) {
               </div>
 
               {activeTab === 'Map' && (
-                <div className="h-[calc(100vh-260px)] min-h-[600px]">
+                <div className="h-[calc(100vh-260px)] min-h-[600px] relative">
                   <CodeFlowGraph nodes={mapData.nodes} edges={mapData.edges} isConnected={!!mapData} />
+                  <button
+                    type="button"
+                    onClick={() => setMapFullScreen(true)}
+                    className="absolute top-3 right-3 z-20 px-3 py-1.5 rounded-lg text-sm font-medium bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg"
+                  >
+                    Full Screen
+                  </button>
                 </div>
               )}
 

@@ -262,13 +262,13 @@ export default function CodeFlowGraph({ nodes: rawNodes, edges: rawEdges, isConn
       `}</style>
 
       <div className="cf-top-bar">
-        <div className="cf-logo">
+        <div className="cf-logo" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <div className="cf-logo-icon"><Zap size={14} /></div>
-          CodeFlow Graph
-        </div>
-        <div className="cf-status">
-          <div className="cf-status-dot" />
-          {isConnected ? 'Connected' : 'Disconnected'}
+          <span>CodeFlow Graph</span>
+          <div className="cf-status" style={{ marginLeft: '0.5rem' }}>
+            <div className="cf-status-dot" />
+            {isConnected ? 'Connected' : 'Disconnected'}
+          </div>
         </div>
       </div>
       <div className="graph-area">
