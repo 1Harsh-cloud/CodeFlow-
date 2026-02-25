@@ -391,7 +391,7 @@ def codebase_flashcards():
 
 
 def _clean_ai_reply(text):
-    """Strip AI-ish formatting: code fences, asterisks, em dashes, etc."""
+    """Strip AI-ish formatting: code fences, asterisks, em dashes, decorative headers, etc."""
     if not text:
         return text
     # Em dashes and en dashes → hyphen or comma
@@ -408,6 +408,10 @@ def _clean_ai_reply(text):
     text = re.sub(r"^#+\s*", "", text, flags=re.MULTILINE)
     # Remove --- and ___ horizontal rules
     text = re.sub(r"^[-_]{3,}\s*$", "", text, flags=re.MULTILINE)
+    # Convert "----- SECTION NAME -----" style headers to plain "SECTION NAME"
+    text = re.sub(r"^[-=\s]{3,}\s*(.+?)\s*[-=\s]{3,}\s*$", r"\1", text, flags=re.MULTILINE)
+    # Remove lines that are only dashes/equals (decorative)
+    text = re.sub(r"^[-=]{2,}\s*$", "", text, flags=re.MULTILINE)
     # Collapse triple+ newlines to double
     text = re.sub(r"\n{3,}", "\n\n", text)
     return text.strip()
@@ -416,7 +420,7 @@ def _clean_ai_reply(text):
 CODEBASE_CHAT_SYSTEM = """You are a helpful, conversational coding assistant that answers questions about a codebase.
 You have access to the project structure and file contents. Answer concisely and accurately.
 Reference specific files, functions, or paths when relevant. If you cannot find something, say so.
-Write in plain prose. Do not use: em dashes, markdown code fences (```), backticks, asterisks for bold/italic, or horizontal rules (---). Use hyphens, commas, and plain text only.
+Write in plain prose. Do not use: em dashes, markdown code fences (```), backticks, asterisks for bold/italic, horizontal rules, or decorative dashed headers like "----- SECTION NAME -----". Use hyphens only within words. For section headers, use plain text like "VIDEO STREAM" not "----- VIDEO STREAM -----". No dashes, equals signs, or icons as decoration.
 
 Be conversational: after each answer, end with a brief, natural follow-up question to keep the dialogue going. For example: "Would you like me to explain how X works in more detail?" or "Should I walk through the Y module next?" or "Do you want to know about error handling in this function?" Keep follow-ups relevant to the topic and codebase. Keep them short (one sentence)."""
 
