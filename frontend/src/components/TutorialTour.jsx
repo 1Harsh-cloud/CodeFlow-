@@ -175,7 +175,7 @@ function buildSteps(setActiveTab, TABS) {
       element: '#tour-play',
       popover: {
         title: 'Run & Play',
-        description: 'Code loads in the editor. Click Run Game to play. Text games run in output; visual games open in a new preview.',
+        description: 'Code loads in the editor. Click Run Game to play your generated game.',
         side: 'bottom',
       },
     },
