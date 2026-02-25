@@ -813,7 +813,22 @@ def generate_code():
         return jsonify({"error": str(e), "success": False}), 500
 
 
-# Pre-built text games (Flamingo-style: play from text)
+# AI prompts for text game generation (used when ANTHROPIC_API_KEY is set)
+TEXT_GAME_PROMPTS = {
+    "guess": "A complete, runnable Python number guessing game. Computer picks 1-20, player has 5 guesses. Use input() for each guess. Clear prompts, handle invalid input. One print per turn (too high/too low). Win message and lose message.",
+    "rps": "A complete, runnable Python Rock Paper Scissors game. Player types rock/paper/scissors, computer picks randomly. Use input(). Print computer choice, then result (tie/win/lose). Handle invalid input.",
+    "story": "A complete, runnable Python mini text adventure. Start in a forest with a choice (left/right or similar). Use input(). Branch to different endings. 3-4 choices max. Clear prompts.",
+    "quiz": "A complete, runnable Python code quiz. 2-3 multiple choice questions about Python (print, indentation, etc). Use input() for answers. Track score, print final score and feedback.",
+    "trivia": "A complete, runnable Python number trivia game. Ask user to pick 1-5, print a fun fact for each number. Use input(). Handle invalid input gracefully.",
+}
+
+TEXT_GAME_SYSTEM = """You generate complete, runnable Python console games. Output ONLY the Python code. No markdown, no explanation.
+- Use only: print(), input(), random, basic conditionals, loops.
+- Each input() must have a clear print() prompt before it.
+- Code must run without errors. Handle invalid input (ValueError for int(), unknown choices).
+- Keep it fun but minimal. No emojis in prompts (optional in output messages)."""
+
+# Fallback: pre-built text games if API fails
 GAME_TEMPLATES = {
     "guess": '''# Number Guessing Game
 import random
@@ -1041,6 +1056,49 @@ def generate_game():
         return jsonify({"error": err_msg, "success": False}), 500
 
 
+def _generate_text_game(key):
+    """Generate text game code via Anthropic API. Returns None if API unavailable."""
+    if key not in TEXT_GAME_PROMPTS:
+        return None
+    api_key = (os.getenv("ANTHROPIC_API_KEY") or "").strip()
+    if " " in api_key:
+        api_key = api_key.split()[0]
+    if not api_key:
+        return None
+    try:
+        from anthropic import Anthropic
+        client = Anthropic(api_key=api_key)
+        mods = ["claude-sonnet-4-6", "claude-sonnet-4-5-20250929", "claude-haiku-4-5-20251001", "claude-sonnet-4-20250514", "claude-3-haiku-20240307"]
+        user_msg = f"Generate this Python game: {TEXT_GAME_PROMPTS[key]}"
+        response = None
+        for m in mods:
+            try:
+                response = client.messages.create(
+                    model=m,
+                    max_tokens=1024,
+                    system=TEXT_GAME_SYSTEM,
+                    messages=[{"role": "user", "content": user_msg}],
+                )
+                break
+            except Exception as e:
+                if any(x in str(e).lower() for x in ["404", "not_found", "invalid", "model"]):
+                    continue
+                raise
+        if not response:
+            return None
+        code = response.content[0].text.strip()
+        if code.startswith("```"):
+            lines = code.split("\n")
+            if lines[0].startswith("```"):
+                lines = lines[1:]
+            if lines and lines[-1].strip() == "```":
+                lines = lines[:-1]
+            code = "\n".join(lines)
+        return code
+    except Exception:
+        return None
+
+
 @app.route("/api/play", methods=["POST"])
 def play_game():
     """
@@ -1066,15 +1124,59 @@ def play_game():
         "quiz": ["quiz", "code question"],
         "trivia": ["trivia", "number 1-5"],
     }
+    matched_key = None
     for key, words in keywords.items():
         if any(w in prompt for w in words):
-            return jsonify({"success": True, "code": GAME_TEMPLATES[key], "game": key})
+            matched_key = key
+            break
 
-    # Custom: use generate-style for unknown games
+    if matched_key:
+        # Try AI generation first, fall back to template
+        ai_code = _generate_text_game(matched_key)
+        code = ai_code if ai_code else GAME_TEMPLATES[matched_key]
+        return jsonify({"success": True, "code": code, "game": matched_key})
+
+    # Custom: use AI to generate from description
+    api_key = (os.getenv("ANTHROPIC_API_KEY") or "").strip()
+    if " " in api_key:
+        api_key = api_key.split()[0]
+    if api_key:
+        try:
+            from anthropic import Anthropic
+            client = Anthropic(api_key=api_key)
+            mods = ["claude-sonnet-4-6", "claude-sonnet-4-5-20250929", "claude-haiku-4-5-20251001"]
+            user_msg = f"Generate a complete, runnable Python console game: {prompt}. Use input() and print(). Output ONLY code."
+            response = None
+            for m in mods:
+                try:
+                    response = client.messages.create(
+                        model=m,
+                        max_tokens=1024,
+                        system=TEXT_GAME_SYSTEM,
+                        messages=[{"role": "user", "content": user_msg}],
+                    )
+                    break
+                except Exception as e:
+                    if any(x in str(e).lower() for x in ["404", "not_found", "invalid", "model"]):
+                        continue
+                    raise
+            if response:
+                code = response.content[0].text.strip()
+                if code.startswith("```"):
+                    lines = code.split("\n")
+                    if lines[0].startswith("```"):
+                        lines = lines[1:]
+                    if lines and lines[-1].strip() == "```":
+                        lines = lines[:-1]
+                    code = "\n".join(lines)
+                return jsonify({"success": True, "code": code, "game": "custom"})
+        except Exception:
+            pass
+
+    # Fallback for custom (no API or API failed)
     custom = f'''# Your game: {prompt[:60]}
-# Integrate LLM to generate custom games from any description!
 print("Game: {prompt[:40]}...")
-print("Add an LLM to generate custom games from any description!")
+print("Describe a game (number guessing, rock paper scissors, etc.) and I'll generate it!")
 '''
     return jsonify({"success": True, "code": custom, "game": "custom"})
 
@@ -1435,6 +1537,8 @@ def execute_code():
             )
 
         output = result.stdout + result.stderr
+        if "EOFError" in output and "EOF when reading a line" in output:
+            output += "\n\n[Tip] The game needed more input. Add more lines to the Input box (one per input() call) and run again."
         return jsonify({
             "success": result.returncode == 0,
             "output": output or "(no output)",

@@ -1,13 +1,5 @@
 import { useState } from 'react'
 
-const PRESETS = [
-  { key: 'guess', label: '🎯 Number Guess', prompt: 'guess' },
-  { key: 'rps', label: '✂️ Rock Paper Scissors', prompt: 'rps' },
-  { key: 'story', label: '🌲 Text Adventure', prompt: 'story' },
-  { key: 'quiz', label: '❓ Code Quiz', prompt: 'quiz' },
-  { key: 'trivia', label: '🔢 Number Trivia', prompt: 'trivia' },
-]
-
 const GAME_IDEAS = [
   { label: 'Pick a game idea…', value: '' },
   { label: '🦩 Flamingo in pond, collect fish, avoid crocodiles ⚡', value: 'Flamingo platformer in a pond with lily pads, collect fish, avoid crocodiles', presetKey: 'flamingo' },
@@ -20,12 +12,10 @@ const GAME_IDEAS = [
   { label: '🐸 Frog crossing, cross the road ⚡', value: 'Frog crossing game, hop across road avoiding cars, reach the pond', presetKey: 'frogger' },
 ]
 
-export default function PlayPanel({ onPlay, onGenerateGame, onImprovePrompt, onRunGame, isLoading, gameDescription, gameHtml }) {
-  const [prompt, setPrompt] = useState('')
+export default function PlayPanel({ onGenerateGame, onImprovePrompt, onRunGame, isLoading, gameDescription, gameHtml }) {
   const [gamePrompt, setGamePrompt] = useState('')
   const [improving, setImproving] = useState(false)
 
-  const handlePreset = (p) => onPlay?.(p)
   const handleImprove = async (e) => {
     e?.preventDefault()
     if (!gamePrompt.trim()) return
@@ -36,10 +26,6 @@ export default function PlayPanel({ onPlay, onGenerateGame, onImprovePrompt, onR
     } finally {
       setImproving(false)
     }
-  }
-  const handleSubmit = (e) => {
-    e?.preventDefault()
-    if (prompt.trim()) onPlay?.(prompt)
   }
   const handleGenerateCode = (e) => {
     e?.preventDefault()
@@ -115,32 +101,6 @@ export default function PlayPanel({ onPlay, onGenerateGame, onImprovePrompt, onR
           <p className="text-xs text-slate-600">Review the code below. Edit if needed, then click Run Game.</p>
         </div>
       )}
-
-      {/* Text games */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white/60 backdrop-blur-sm p-4 shadow-xl">
-        <h3 className="text-sm font-medium text-slate-600 mb-2">Text games (run in output)</h3>
-        <p className="text-xs text-slate-500 mb-3">Describe or pick — code loads in editor, run and put input below.</p>
-        <form onSubmit={handleSubmit} className="flex gap-2 mb-4">
-          <input
-            type="text"
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="e.g. number guessing, rock paper scissors"
-            className="flex-1 px-4 py-2.5 rounded-lg bg-white/80 border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/50 outline-none text-slate-800 placeholder-slate-400"
-            disabled={isLoading}
-          />
-          <button type="submit" disabled={isLoading || !prompt.trim()} className="px-6 py-2.5 rounded-lg bg-white/80 hover:bg-slate-100 border border-slate-300 text-slate-800 disabled:opacity-50 font-medium">
-            Play
-          </button>
-        </form>
-        <div className="flex flex-wrap gap-2">
-          {PRESETS.map((p) => (
-            <button key={p.key} onClick={() => handlePreset(p.prompt)} disabled={isLoading} className="px-3 py-1.5 rounded-lg bg-white/60 hover:bg-white/80 border border-slate-200/80 text-slate-700 text-sm disabled:opacity-50 backdrop-blur-sm">
-              {p.label}
-            </button>
-          ))}
-        </div>
-      </div>
     </div>
   )
 }

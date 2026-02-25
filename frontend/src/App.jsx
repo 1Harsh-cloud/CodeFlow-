@@ -112,26 +112,6 @@ function App() {
     }
   }
 
-  const handlePlay = async (prompt) => {
-    setIsLoading(true)
-    setError('')
-    try {
-      const res = await fetch(`${API_BASE}/api/play`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt }),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Play failed')
-      setCode(data.code)
-      setLineByLine([])
-    } catch (err) {
-      setError(parseApiError(err))
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   const handleGenerateGame = async (prompt, presetKey) => {
     setError('')
     setGameHtml('')
@@ -210,8 +190,8 @@ function App() {
       return
     }
     if ((codeVal.includes('input(') || codeVal.includes('input (')) && !stdinVal.trim()) {
-      setError('Input box is empty. This code uses input() — add values above (one per line), then run again.')
-      setOutputFn('Input box is empty. This code uses input() — add values in the Input section (one per line), then click Run Code again.')
+      setError('Input box is empty. Add your values above (one per line), then click Run Code.')
+      setOutputFn('Input box is empty. Add values in the Input box above Run Code (one per line), then run again.')
       return
     }
     setIsLoading(true)
@@ -320,7 +300,6 @@ function App() {
                 style={{ background: 'linear-gradient(180deg, #faf5ff 0%, #f3e8ff 30%, #ede9fe 60%, #e0e7ff 100%)' }}
               >
                 <PlayPanel
-                  onPlay={handlePlay}
                   onGenerateGame={handleGenerateGame}
                   onImprovePrompt={handleImprovePrompt}
                   onRunGame={handleRunGame}
@@ -367,7 +346,7 @@ function App() {
               </button>
             ) : (
               <button
-                onClick={handleExecute}
+                onClick={() => handleExecute()}
                 disabled={isLoading}
                 className="w-full py-3 px-4 rounded-xl font-medium transition-all text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ background: 'linear-gradient(135deg, #6366f1, #ec4899)' }}
@@ -403,7 +382,7 @@ function App() {
                   output={output}
                   stdin={stdin}
                   onStdinChange={setStdin}
-                  showGameInput={true}
+                  showGameInput={!(activeTab === TABS.PLAY && !gameHtml && (code.includes('input(') || code.includes('input (')))}
                 />
               </div>
             )}
