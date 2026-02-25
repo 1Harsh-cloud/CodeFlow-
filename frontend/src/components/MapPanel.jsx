@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react'
+import { Document, Packer, Paragraph, TextRun, HeadingLevel } from 'docx'
 import CodeFlowGraph from './CodeFlowGraph'
 
 const GITHUB_TOKEN_KEY = 'codeflow_github_token'
@@ -469,23 +470,48 @@ export default function MapPanel({ isLoading, error, setError }) {
     }
   }
 
-  const exportReportDocs = () => {
+  const exportReportDocs = async () => {
     if (!report) return
-    const rtfHeader = '{\\rtf1\\ansi\\deff0\n{\\fonttbl{\\f0\\fnil\\fcharset0 Arial;}}\n\\f0\\fs24\n'
-    const rtfFooter = '\n}'
-    const escaped = report
-      .replace(/\\/g, '\\\\')
-      .replace(/\n/g, '\\par\n')
-      .replace(/\{/g, '\\{')
-      .replace(/\}/g, '\\}')
-    const rtf = rtfHeader + escaped + rtfFooter
-    const blob = new Blob([rtf], { type: 'application/rtf' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'project-report.rtf'
-    a.click()
-    URL.revokeObjectURL(url)
+    try {
+      const children = []
+      const lines = report.split('\n')
+      for (const line of lines) {
+        if (line.startsWith('## ')) {
+          children.push(new Paragraph({ text: line.slice(3), heading: HeadingLevel.HEADING_1 }))
+        } else if (line.startsWith('### ')) {
+          children.push(new Paragraph({ text: line.slice(4), heading: HeadingLevel.HEADING_2 }))
+        } else if (line.trim() === '') {
+          children.push(new Paragraph({ text: '' }))
+        } else {
+          const runs = []
+          let rest = line
+          const boldRe = /\*\*([^*]+)\*\*/g
+          let lastIdx = 0
+          let m
+          while ((m = boldRe.exec(rest)) !== null) {
+            if (m.index > lastIdx) {
+              runs.push(new TextRun({ text: rest.slice(lastIdx, m.index) }))
+            }
+            runs.push(new TextRun({ text: m[1], bold: true }))
+            lastIdx = m.index + m[0].length
+          }
+          if (lastIdx < rest.length) runs.push(new TextRun({ text: rest.slice(lastIdx) }))
+          children.push(runs.length > 0 ? new Paragraph({ children: runs }) : new Paragraph({ text: line }))
+        }
+      }
+      const doc = new Document({
+        sections: [{ properties: {}, children }],
+      })
+      const blob = await Packer.toBlob(doc)
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'project-report.docx'
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch (e) {
+      setReportError('DOCX download failed: ' + (e.message || 'Unknown error'))
+    }
   }
 
   const generateReport = async () => {
@@ -871,7 +897,21 @@ export default function MapPanel({ isLoading, error, setError }) {
                   {chatError && <p className="text-red-400 text-sm mb-3">{chatError}</p>}
                   <div className="flex-1 overflow-y-auto rounded-lg border border-slate-200 bg-white/50 p-4 mb-4 space-y-3 min-h-0">
                     {chatMessages.length === 0 && (
-                      <p className="text-slate-500 text-sm">Send a message to start chatting about your codebase.</p>
+                      <div className="space-y-3">
+                        <p className="text-slate-500 text-sm">Send a message to start chatting about your codebase. I'll answer and often ask a follow-up to keep the conversation going.</p>
+                        <div className="flex flex-wrap gap-2">
+                          {['What does this project do?', 'Explain the main structure', 'Which files handle API routes?', 'How is authentication done?'].map((q) => (
+                            <button
+                              key={q}
+                              type="button"
+                              onClick={() => { setChatInput(q); }}
+                              className="px-3 py-1.5 rounded-lg text-sm bg-indigo-100 hover:bg-indigo-200 text-indigo-700 border border-indigo-200/60 transition-colors"
+                            >
+                              {q}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                     )}
                     {chatMessages.map((m, i) => (
                       <div
