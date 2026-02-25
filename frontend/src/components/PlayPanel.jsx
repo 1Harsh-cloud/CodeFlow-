@@ -60,10 +60,11 @@ export default function PlayPanel({ onPlay, onGenerateGame, onImprovePrompt, onR
       </div>
 
       {/* Game idea — dropdown + custom input */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white/60 backdrop-blur-sm p-4 shadow-xl">
+      <div id="tour-play-ideas" className="rounded-2xl border border-slate-200/80 bg-white/60 backdrop-blur-sm p-4 shadow-xl">
         <p className="text-sm text-slate-600 mb-2">Be specific about the game. Pick an idea or type your own</p>
         <div className="flex flex-col gap-3">
           <select
+            id="tour-play-dropdown"
             value={GAME_IDEAS.find(g => g.value === gamePrompt) ? gamePrompt : ''}
             onChange={(e) => setGamePrompt(e.target.value)}
             className="w-full px-4 py-2.5 rounded-lg bg-white/80 border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/50 outline-none text-slate-800"
@@ -73,8 +74,9 @@ export default function PlayPanel({ onPlay, onGenerateGame, onImprovePrompt, onR
               <option key={g.value || 'empty'} value={g.value}>{g.label}</option>
             ))}
           </select>
-          <form onSubmit={handleGenerateCode} className="flex flex-wrap gap-2 items-center">
+          <form id="tour-play-form" onSubmit={handleGenerateCode} className="flex flex-wrap gap-2 items-center">
             <input
+              id="tour-play-prompt"
               type="text"
               value={gamePrompt}
               onChange={(e) => setGamePrompt(e.target.value)}

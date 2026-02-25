@@ -34,6 +34,7 @@ export default function ExplainPanel({
 
   return (
     <div
+      id="tour-explain"
       className="p-6 rounded-2xl grid grid-cols-1 md:grid-cols-[2fr_3fr] gap-8"
       style={{ background: 'linear-gradient(180deg, #faf5ff 0%, #f3e8ff 30%, #ede9fe 60%, #e0e7ff 100%)' }}
     >
@@ -47,6 +48,7 @@ export default function ExplainPanel({
             </p>
           </div>
           <div
+            id="tour-exp-upload"
             onClick={() => !isLoading && inputRef.current?.click()}
             className="flex items-center justify-center gap-3 p-5 rounded-xl border-2 border-dashed border-slate-300 hover:border-indigo-500/50 cursor-pointer transition-colors bg-white/50 mb-4"
           >
@@ -65,6 +67,7 @@ export default function ExplainPanel({
             </span>
           </div>
           <button
+            id="tour-exp-btn"
             type="button"
             onClick={() => onExplain?.(code)}
             disabled={isLoading}
@@ -85,7 +88,7 @@ export default function ExplainPanel({
         </div>
 
         {/* Line-by-line - stretches to match Output bottom, scrolls INSIDE */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white/60 backdrop-blur-sm shadow-xl flex flex-col flex-1 min-h-[279px] max-h-[511px] overflow-hidden">
+        <div id="tour-exp-linebyline" className="rounded-2xl border border-slate-200/80 bg-white/60 backdrop-blur-sm shadow-xl flex flex-col flex-1 min-h-[279px] max-h-[511px] overflow-hidden">
           <div className="px-5 py-4 border-b border-slate-200/60 shrink-0">
             <h3 className="text-slate-800 font-semibold text-sm tracking-tight">Line-by-line explanation</h3>
             <p className="text-slate-500 text-xs mt-0.5">AI-powered breakdown of each line</p>
@@ -137,6 +140,7 @@ export default function ExplainPanel({
             </div>
             {['python', 'javascript', 'java', 'c', 'cpp'].includes(language) ? (
               <button
+                id="tour-exp-run"
                 onClick={() => onExecute?.(language)}
                 disabled={isLoading}
                 className="py-2 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 font-semibold text-white text-sm transition-colors"
@@ -154,7 +158,7 @@ export default function ExplainPanel({
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/80 bg-white/60 backdrop-blur-sm p-4 shadow-xl shrink-0">
+        <div id="tour-exp-input" className="rounded-2xl border border-slate-200/80 bg-white/60 backdrop-blur-sm p-4 shadow-xl shrink-0">
           <h3 className="text-slate-600 font-semibold text-sm mb-2">Input (for input() prompts)</h3>
           <textarea
             value={stdin}
@@ -165,7 +169,7 @@ export default function ExplainPanel({
           />
         </div>
 
-        <div className="rounded-2xl border border-slate-200/80 bg-white/60 backdrop-blur-sm p-4 shadow-xl shrink-0">
+        <div id="tour-exp-output" className="rounded-2xl border border-slate-200/80 bg-white/60 backdrop-blur-sm p-4 shadow-xl shrink-0">
           <h3 className="text-slate-600 font-semibold text-sm mb-2">Output</h3>
           <div className="h-[216px] p-4 rounded-xl bg-slate-50 border border-slate-200 font-mono text-sm overflow-auto">
             <pre className="whitespace-pre-wrap text-slate-700">{output || 'Run code to see output.'}</pre>

@@ -67,6 +67,7 @@ export default function GeneratePanel({
 
   return (
     <div
+      id="tour-generate"
       className="p-6 rounded-2xl grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-6"
       style={{ background: 'linear-gradient(180deg, #faf5ff 0%, #f3e8ff 30%, #ede9fe 60%, #e0e7ff 100%)' }}
     >
@@ -78,6 +79,7 @@ export default function GeneratePanel({
               What do you want to build?
             </label>
             <select
+              id="tour-gen-lang"
               value={language}
               onChange={(e) => onLanguageChange?.(e.target.value)}
               className="px-3 py-2 rounded-lg bg-slate-100 border border-slate-300 text-slate-800 text-sm font-medium focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
@@ -88,6 +90,7 @@ export default function GeneratePanel({
             </select>
           </div>
           <textarea
+            id="tour-gen-prompt"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             placeholder={`Describe what you want to build...
@@ -101,6 +104,7 @@ Try: Linear search in a list`}
             disabled={isLoading}
           />
           <button
+            id="tour-gen-btn"
             type="button"
             onClick={handleSubmit}
             disabled={isLoading || !prompt.trim()}
@@ -121,7 +125,7 @@ Try: Linear search in a list`}
           </button>
         </div>
 
-        <div>
+        <div id="tour-gen-examples">
           <p className="text-slate-500 font-semibold text-sm mb-3">Quick Start Examples</p>
           <div className="flex flex-col gap-2">
             {EXAMPLES.map((ex) => (
@@ -158,12 +162,13 @@ Try: Linear search in a list`}
       {/* Right: Editor + Input + Output */}
       <div className="flex flex-col gap-4">
         {/* Code Editor Card */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white/60 backdrop-blur-sm overflow-hidden shadow-xl">
+        <div id="tour-gen-editor" className="rounded-2xl border border-slate-200/80 bg-white/60 backdrop-blur-sm overflow-hidden shadow-xl">
           <div className="flex flex-col gap-1 px-4 py-3 bg-slate-100/80 border-b border-slate-200/60">
             <div className="flex justify-between items-center">
               <span className="text-slate-600 font-medium text-sm">Code Editor · {selectedLang.label}</span>
               {canRun ? (
               <button
+                id="tour-gen-run"
                 onClick={() => onExecute?.(language)}
                 disabled={isLoading}
                 className="py-2 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 font-semibold text-white text-sm transition-colors"
@@ -184,7 +189,7 @@ Try: Linear search in a list`}
         </div>
 
         {/* Input Box */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white/60 backdrop-blur-sm p-4 shadow-xl">
+        <div id="tour-gen-input" className="rounded-2xl border border-slate-200/80 bg-white/60 backdrop-blur-sm p-4 shadow-xl">
           <h3 className="text-slate-600 font-semibold text-sm mb-2">Input (for input() prompts)</h3>
           <textarea
             value={stdin}
@@ -196,7 +201,7 @@ Try: Linear search in a list`}
         </div>
 
         {/* Output Card - fixed height, scrolls inside */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white/60 backdrop-blur-sm p-4 shadow-xl shrink-0">
+        <div id="tour-gen-output" className="rounded-2xl border border-slate-200/80 bg-white/60 backdrop-blur-sm p-4 shadow-xl shrink-0">
           <h3 className="text-slate-600 font-semibold text-sm mb-2">Output</h3>
           <div className="line-by-line-scroll h-[280px] min-h-0 overflow-y-auto overflow-x-hidden p-4 rounded-xl bg-slate-50 border border-slate-200 font-mono text-sm">
             <pre className="whitespace-pre-wrap text-slate-700">{output || 'Run code to see output here.'}</pre>

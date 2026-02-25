@@ -562,15 +562,17 @@ export default function MapPanel({ isLoading, error, setError }) {
 
   return (
     <div
+      id="tour-map"
       className="space-y-4 p-6 rounded-2xl"
       style={{ background: 'linear-gradient(180deg, #faf5ff 0%, #f3e8ff 30%, #ede9fe 60%, #e0e7ff 100%)' }}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* GitHub import */}
-        <div className="p-4 rounded-2xl border border-slate-200/80 bg-white/60 backdrop-blur-sm shadow-xl space-y-3">
+        <div id="tour-map-github" className="p-4 rounded-2xl border border-slate-200/80 bg-white/60 backdrop-blur-sm shadow-xl space-y-3">
           <h3 className="text-sm font-medium text-slate-700 mb-2">Import from GitHub</h3>
           <div className="flex flex-wrap gap-2 items-center">
             <button
+              id="tour-map-connect"
               type="button"
               onClick={handleConnectGitHub}
               className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm border ${
@@ -608,10 +610,11 @@ export default function MapPanel({ isLoading, error, setError }) {
               {loadingRepos && <p className="text-xs text-slate-500 mt-1">Loading repos...</p>}
             </div>
           )}
-          <div>
+          <div id="tour-map-repo">
             <label className="text-xs text-slate-500 block mb-1">Or paste repo URL</label>
             <form onSubmit={handleGithubSubmit} className="flex gap-2">
               <input
+                id="tour-map-url"
                 type="url"
                 placeholder="https://github.com/owner/repo"
                 value={githubUrl}
@@ -619,6 +622,7 @@ export default function MapPanel({ isLoading, error, setError }) {
                 className="flex-1 px-3 py-2 rounded-lg bg-slate-100 border border-slate-200 text-slate-800 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               />
               <button
+                id="tour-map-fetch"
                 type="submit"
                 disabled={isLoadingMap}
                 className="px-4 py-2 rounded-lg disabled:opacity-50 font-medium text-sm text-white transition-all"
@@ -631,7 +635,7 @@ export default function MapPanel({ isLoading, error, setError }) {
         </div>
 
         {/* Zip upload */}
-        <div className="p-4 rounded-2xl border border-slate-200/80 bg-white/60 backdrop-blur-sm shadow-xl">
+        <div id="tour-map-upload" className="p-4 rounded-2xl border border-slate-200/80 bg-white/60 backdrop-blur-sm shadow-xl">
           <h3 className="text-sm font-medium text-slate-700 mb-2">Upload project (.zip)</h3>
           <label className="flex items-center justify-center gap-3 p-6 rounded-xl border-2 border-dashed border-slate-200/80 hover:border-indigo-500/60 cursor-pointer transition-colors bg-white/50">
             <input

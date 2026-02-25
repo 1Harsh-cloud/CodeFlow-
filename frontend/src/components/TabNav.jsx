@@ -1,6 +1,6 @@
 export default function TabNav({ activeTab, setActiveTab, tabs }) {
   return (
-    <div className="flex flex-wrap gap-2 p-1 rounded-xl bg-white/90 border border-slate-200 shadow-sm w-fit">
+    <div id="tour-tabs" className="flex flex-wrap gap-2 p-1 rounded-xl bg-white/90 border border-slate-200 shadow-sm w-fit">
       <button
         onClick={() => setActiveTab(tabs.MAP)}
         className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${

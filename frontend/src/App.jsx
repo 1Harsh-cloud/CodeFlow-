@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import FileUpload from './components/FileUpload'
 import TextInput from './components/TextInput'
 import CodeEditor from './components/CodeEditor'
@@ -10,6 +10,7 @@ import ReadyToPlay from './components/ReadyToPlay'
 import MapPanel from './components/MapPanel'
 import GeneratePanel from './components/GeneratePanel'
 import ExplainPanel from './components/ExplainPanel'
+import TutorialTour from './components/TutorialTour'
 import { PRESET_GAMES } from './presetGames'
 
 const TABS = {
@@ -39,6 +40,7 @@ function App() {
   const [error, setError] = useState('')
   const [generateLanguage, setGenerateLanguage] = useState('python')
   const [explainLanguage, setExplainLanguage] = useState('python')
+  const tutorialRef = useRef(null)
 
   const API_BASE = import.meta.env.VITE_API_URL || ''
 
@@ -240,13 +242,23 @@ function App() {
 
   return (
     <div className="min-h-screen text-slate-800">
+      <TutorialTour ref={tutorialRef} setActiveTab={setActiveTab} TABS={TABS} />
       {/* Header */}
       <header className="border-b border-slate-200 bg-white/80 backdrop-blur-sm shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold tracking-tight">
             <span className="text-indigo-600">Code</span><span className="text-slate-900">Flow</span>
           </h1>
-          <p className="text-sm text-slate-500">Code explanation & playground</p>
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={() => tutorialRef.current?.startTour?.()}
+              className="text-sm text-indigo-600 hover:text-indigo-500 font-medium"
+            >
+              Tutorial
+            </button>
+            <p className="text-sm text-slate-500">Code explanation & playground</p>
+          </div>
         </div>
       </header>
 
@@ -303,6 +315,7 @@ function App() {
             )}
             {activeTab === TABS.PLAY && (
               <div
+                id="tour-play"
                 className="space-y-4 p-6 rounded-2xl"
                 style={{ background: 'linear-gradient(180deg, #faf5ff 0%, #f3e8ff 30%, #ede9fe 60%, #e0e7ff 100%)' }}
               >

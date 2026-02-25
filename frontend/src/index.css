@@ -79,3 +79,303 @@ html, body {
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }
+
+/* ===== CodeFlow Tutorial Tour - Dark modal UI (reference design) ===== */
+.driver-popover.codeflow-tour {
+  background: #221B33 !important;
+  border: 1px solid #380F6C !important;
+  border-radius: 18px !important;
+  box-shadow: 0 0 40px rgba(166, 105, 255, 0.25), 0 0 80px rgba(109, 49, 255, 0.15) !important;
+  padding: 24px 26px !important;
+  min-width: 280px !important;
+  max-width: 460px !important;
+  font-family: 'Space Grotesk', system-ui, sans-serif !important;
+  overflow: visible !important;
+}
+.driver-popover.codeflow-tour .driver-popover-title {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  color: #FFFFFF !important;
+  margin-bottom: 0 !important;
+}
+.driver-popover.codeflow-tour .tour-title-with-icon {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  margin-bottom: 8px !important;
+}
+.driver-popover.codeflow-tour .tour-step-icon-wrap {
+  flex-shrink: 0 !important;
+  line-height: 0 !important;
+}
+.driver-popover.codeflow-tour .tour-step-icon-wrap > div {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.driver-popover.codeflow-tour .driver-popover-description {
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  color: #D0CCD3 !important;
+  margin-bottom: 0 !important;
+}
+.driver-popover.codeflow-tour .driver-popover-close-btn {
+  color: #C199E2 !important;
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 10px !important;
+  background: transparent !important;
+}
+.driver-popover.codeflow-tour .driver-popover-close-btn:hover {
+  color: #FFFFFF !important;
+  background: rgba(166, 105, 255, 0.2) !important;
+}
+.driver-popover.codeflow-tour .driver-popover-footer {
+  margin-top: 20px !important;
+  padding-top: 16px !important;
+  border-top: 1px solid rgba(56, 15, 108, 0.5) !important;
+  transform: translateZ(0) !important;
+}
+.driver-popover.codeflow-tour .driver-popover-progress-text {
+  color: #C199E2 !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+}
+.driver-popover.codeflow-tour .driver-popover-footer button {
+  padding: 10px 18px !important;
+  border-radius: 12px !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em !important;
+  border: none !important;
+  transition: box-shadow 0.2s ease, background 0.2s ease !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  text-rendering: geometricPrecision !important;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  transform: translateZ(0) !important;
+  text-shadow: 0 0 0 rgba(0, 0, 0, 0.01) !important;
+}
+.driver-popover.codeflow-tour .driver-popover-prev-btn {
+  background: #39324B !important;
+  color: #FFFFFF !important;
+}
+.driver-popover.codeflow-tour .driver-popover-prev-btn:hover {
+  background: #4a4258 !important;
+}
+.driver-popover.codeflow-tour .driver-popover-next-btn {
+  background: linear-gradient(135deg, #A669FF, #6D31FF) !important;
+  color: #FFFFFF !important;
+}
+.driver-popover.codeflow-tour .driver-popover-next-btn:hover {
+  background: linear-gradient(135deg, #b47aff, #7d3fff) !important;
+  box-shadow: 0 4px 20px rgba(166, 105, 255, 0.4) !important;
+}
+.driver-popover.codeflow-tour .driver-popover-arrow-side-left { border-right-color: #221B33 !important; }
+.driver-popover.codeflow-tour .driver-popover-arrow-side-right { border-left-color: #221B33 !important; }
+.driver-popover.codeflow-tour .driver-popover-arrow-side-top { border-bottom-color: #221B33 !important; }
+.driver-popover.codeflow-tour .driver-popover-arrow-side-bottom { border-top-color: #221B33 !important; }
+
+/* First tutorial box – wizard at top (large, ~60% of content), then title */
+.tour-first-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+.tour-wizard-mascot {
+  width: 300px;
+  height: 300px;
+  flex-shrink: 0;
+  animation: tour-mascot-float 2.5s ease-in-out infinite;
+  filter: drop-shadow(0 6px 20px rgba(139, 92, 246, 0.5));
+}
+.tour-wizard-mascot .tour-wizard-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center top;
+}
+.tour-first-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  color: #ffffff;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  text-rendering: geometricPrecision !important;
+  transform: translateZ(0);
+}
+@keyframes tour-mascot-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* Step 2 & 3: Character beside the box (Witch, Pekka) */
+.driver-popover.codeflow-tour.tour-step-with-character {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  min-width: 0 !important;
+  max-width: none !important;
+}
+.tour-speech-layout {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 0 !important;
+}
+.tour-character-beside {
+  position: relative;
+  flex-shrink: 0;
+  margin-left: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: tour-character-idle 2.5s ease-in-out infinite;
+  background: transparent !important;
+}
+.tour-character-witch {
+  width: 180px;
+  height: 320px;
+}
+.tour-character-pekka {
+  width: 220px;
+  height: 380px;
+  margin-left: 20px;
+}
+.tour-character-dragon {
+  width: 200px;
+  height: 360px;
+  margin-left: 20px;
+}
+.tour-character-barberian {
+  width: 200px;
+  height: 420px;
+  margin-right: 20px;
+  margin-left: 0;
+  overflow: hidden;
+  border-radius: 18px;
+}
+.tour-character-barberian .tour-character-img {
+  object-fit: contain;
+  object-position: center bottom;
+}
+.tour-character-valkyrie {
+  width: 240px;
+  height: 420px;
+  margin-left: 20px;
+  overflow: hidden;
+  border-radius: 18px;
+}
+.tour-character-valkyrie .tour-character-img {
+  object-fit: contain;
+  object-position: center center;
+}
+.tour-character-hogrider {
+  width: 240px;
+  height: 420px;
+  margin-left: 20px;
+  overflow: hidden;
+  border-radius: 18px;
+}
+.tour-character-hogrider .tour-character-img {
+  object-fit: contain;
+  object-position: center center;
+}
+.tour-character-barberian1 {
+  width: 240px;
+  height: 420px;
+  margin-left: 20px;
+  overflow: hidden;
+  border-radius: 18px;
+}
+.tour-character-barberian1 .tour-character-img {
+  object-fit: contain;
+  object-position: center center;
+}
+.tour-character-hogrider2 {
+  width: 300px;
+  height: 500px;
+  margin-left: 20px;
+  overflow: hidden;
+  border-radius: 18px;
+}
+.tour-character-hogrider2 .tour-character-img {
+  object-fit: contain;
+  object-position: center center;
+}
+.tour-character-beside .tour-character-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  image-rendering: auto;
+  animation: tour-character-glow 2.5s ease-in-out infinite alternate;
+}
+@keyframes tour-character-idle {
+  0%, 100% { transform: translateY(0) scale(1) rotate(-1deg); }
+  25% { transform: translateY(-12px) scale(1.03) rotate(0.5deg); }
+  50% { transform: translateY(-6px) scale(1.05) rotate(0deg); }
+  75% { transform: translateY(-14px) scale(1.02) rotate(0.3deg); }
+}
+@keyframes tour-character-glow {
+  0% { filter: drop-shadow(2px 4px 12px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 20px rgba(139, 92, 246, 0.2)) saturate(1.1) contrast(1.03) brightness(1); }
+  100% { filter: drop-shadow(3px 6px 16px rgba(0, 0, 0, 0.45)) drop-shadow(0 0 28px rgba(139, 92, 246, 0.35)) saturate(1.15) contrast(1.06) brightness(1.06); }
+}
+.tour-speech-bubble {
+  flex: 0 0 auto;
+  width: 340px;
+  min-width: 340px;
+  max-width: 340px;
+  background: #221B33 !important;
+  border: 1px solid #380F6C !important;
+  border-radius: 18px !important;
+  box-shadow: 0 0 40px rgba(166, 105, 255, 0.25), 0 0 80px rgba(109, 49, 255, 0.15) !important;
+  padding: 24px 26px !important;
+  position: relative;
+}
+.tour-speech-bubble::before {
+  content: '';
+  position: absolute;
+  right: -12px;
+  bottom: 50px;
+  border: 14px solid transparent;
+  border-left-color: #221B33;
+  border-top-width: 0;
+  filter: drop-shadow(2px 0 0 #380F6C);
+}
+.tour-speech-bubble-tail-left::before {
+  right: auto;
+  left: -12px;
+  border-left-color: transparent;
+  border-right-color: #221B33;
+  border-top-width: 0;
+  filter: drop-shadow(-2px 0 0 #380F6C);
+}
+.tour-speech-bubble-tail-none::before {
+  display: none;
+}
+.tour-speech-layout-below {
+  flex-direction: column !important;
+  align-items: center !important;
+}
+.tour-speech-layout-below .tour-character-barberian {
+  margin-right: 0;
+  margin-top: 20px;
+}
+
+/* Overlay: keep default – page stays visible, only box has dark style */
+
+/* Close (X) button - ensure clickable */
+.driver-popover.codeflow-tour .driver-popover-close-btn {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
