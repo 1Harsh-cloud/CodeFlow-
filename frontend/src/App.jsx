@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import FileUpload from './components/FileUpload'
 import TextInput from './components/TextInput'
 import CodeEditor from './components/CodeEditor'
@@ -40,9 +40,51 @@ function App() {
   const [error, setError] = useState('')
   const [generateLanguage, setGenerateLanguage] = useState('python')
   const [explainLanguage, setExplainLanguage] = useState('python')
+  const [showPricing, setShowPricing] = useState(false)
+  const [paymentStatus, setPaymentStatus] = useState(null)
+  const [pricingError, setPricingError] = useState('')
   const tutorialRef = useRef(null)
 
-  const API_BASE = import.meta.env.VITE_API_URL || ''
+  const API_BASE = import.meta.env.VITE_API_URL || (typeof window !== 'undefined' && window.location?.hostname === 'localhost' ? 'http://localhost:5000' : '')
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const p = params.get('payment')
+    if (p === 'success') setPaymentStatus('success')
+    else if (p === 'cancelled') setPaymentStatus('cancelled')
+    if (p) window.history.replaceState({}, '', window.location.pathname)
+  }, [])
+
+  const handleSubscribe = async (plan = 'pro') => {
+    setPricingError('')
+    setError('')
+    setIsLoading(true)
+    try {
+      const frontendBase = window.location.origin
+      const url = `${API_BASE}/api/create-checkout-session`
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          plan,
+          successUrl: `${frontendBase}/?payment=success`,
+          cancelUrl: `${frontendBase}/?payment=cancelled`,
+        }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(data.error || 'Checkout failed')
+      if (data.url) {
+        window.location.href = data.url
+        return
+      }
+      throw new Error('No checkout URL returned')
+    } catch (err) {
+      const msg = err?.message || 'Could not start checkout'
+      setPricingError(msg)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const parseApiError = (err) => {
     if (err?.message?.includes('Unexpected token') || err?.message?.includes('is not valid JSON')) {
@@ -223,6 +265,18 @@ function App() {
   return (
     <div className="min-h-screen text-slate-800">
       <TutorialTour ref={tutorialRef} setActiveTab={setActiveTab} TABS={TABS} />
+      {paymentStatus === 'success' && (
+        <div className="bg-emerald-500 text-white px-4 py-2 text-center text-sm font-medium flex items-center justify-center gap-2">
+          ✓ Payment demo completed successfully!
+          <button onClick={() => setPaymentStatus(null)} className="ml-2 underline">Dismiss</button>
+        </div>
+      )}
+      {paymentStatus === 'cancelled' && (
+        <div className="bg-amber-500 text-white px-4 py-2 text-center text-sm font-medium flex items-center justify-center gap-2">
+          Payment cancelled.
+          <button onClick={() => setPaymentStatus(null)} className="ml-2 underline">Dismiss</button>
+        </div>
+      )}
       {/* Header */}
       <header className="border-b border-slate-200 bg-white/80 backdrop-blur-sm shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -236,6 +290,13 @@ function App() {
               className="text-sm text-indigo-600 hover:text-indigo-500 font-medium"
             >
               Tutorial
+            </button>
+            <button
+              type="button"
+              onClick={() => { setShowPricing(true); setPricingError(''); }}
+              className="text-sm font-medium px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-500 transition-colors"
+            >
+              Pricing
             </button>
             <p className="text-sm text-slate-500">Code explanation & playground</p>
           </div>
@@ -390,6 +451,88 @@ function App() {
           )}
         </div>
       </main>
+
+      {/* Pricing Modal */}
+      {showPricing && (
+        <div className="fixed inset-0 z-50 overflow-y-auto py-8 px-4 bg-slate-900/60 backdrop-blur-md flex items-center justify-center min-h-screen" onClick={() => setShowPricing(false)}>
+          <div className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full p-8 md:p-10" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-10">
+              <h2 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Invest in Your Code, Not in Guesswork</h2>
+              <button onClick={() => setShowPricing(false)} className="p-2 -m-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors text-xl">×</button>
+            </div>
+            {(error || pricingError) && <p className="text-red-500 text-sm mb-6 text-center">{pricingError || error}</p>}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+              {/* Free Tier */}
+              <div className="bg-slate-50/80 rounded-2xl border border-slate-200 p-6 flex flex-col transition-all hover:border-slate-300 hover:shadow-md">
+                <h3 className="text-lg font-bold text-slate-800">Free</h3>
+                <div className="mt-5">
+                  <span className="text-3xl font-bold text-slate-800">$0</span>
+                </div>
+                <p className="text-sm text-slate-500 mt-1">No payment required</p>
+                <ul className="mt-6 space-y-4 flex-1">
+                  {['AI Code Explanation', 'Run Code (Python, JS)', 'File Upload'].map((f) => (
+                    <li key={f} className="flex items-center gap-3 text-slate-700 text-sm">
+                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 text-xs font-bold">✓</span> {f}
+                    </li>
+                  ))}
+                  {['Code Generation', 'Codebase Map', 'Game Generation'].map((f) => (
+                    <li key={f} className="flex items-center gap-3 text-slate-400 text-sm">
+                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-slate-300 text-xs">✕</span> {f}
+                    </li>
+                  ))}
+                </ul>
+                <button onClick={() => setShowPricing(false)} className="mt-6 w-full py-3.5 rounded-xl font-semibold border-2 border-slate-300 text-slate-700 hover:border-slate-400 hover:bg-white transition-colors">
+                  Get Started Free
+                </button>
+              </div>
+              {/* Pro - MOST POPULAR */}
+              <div className="bg-white rounded-2xl border-2 border-indigo-500 shadow-lg shadow-indigo-500/20 relative flex flex-col ring-2 ring-indigo-500/30">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-indigo-600 text-white text-xs font-bold tracking-wide">MOST POPULAR</div>
+                <div className="p-6 pt-10 flex flex-col flex-1">
+                  <h3 className="text-lg font-bold text-slate-800">Best Value!</h3>
+                  <div className="mt-5">
+                    <span className="text-3xl font-bold text-indigo-600">$9.99</span>
+                  </div>
+                  <p className="text-sm text-slate-500 mt-1">One time payment</p>
+                  <ul className="mt-6 space-y-4 flex-1">
+                    {['AI Code Explanation', 'Run Code (Python, JS)', 'File Upload', 'Code Generation', 'Codebase Map'].map((f) => (
+                      <li key={f} className="flex items-center gap-3 text-slate-700 text-sm">
+                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 text-xs font-bold">✓</span> {f}
+                      </li>
+                    ))}
+                    {['Game Generation'].map((f) => (
+                      <li key={f} className="flex items-center gap-3 text-slate-400 text-sm">
+                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-slate-300 text-xs">✕</span> {f}
+                      </li>
+                    ))}
+                  </ul>
+                  <button onClick={() => handleSubscribe('pro')} disabled={isLoading} className="mt-6 w-full py-3.5 rounded-xl font-semibold text-white bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 shadow-lg shadow-indigo-600/30 transition-all">
+                    {isLoading ? 'Redirecting…' : 'Get Started'}
+                  </button>
+                </div>
+              </div>
+              {/* Ultimate */}
+              <div className="bg-slate-50/80 rounded-2xl border border-slate-200 p-6 flex flex-col transition-all hover:border-slate-300 hover:shadow-md">
+                <h3 className="text-lg font-bold text-slate-800">Ultimate</h3>
+                <div className="mt-5">
+                  <span className="text-3xl font-bold text-indigo-600">$19.99</span>
+                </div>
+                <p className="text-sm text-slate-500 mt-1">One time payment</p>
+                <ul className="mt-6 space-y-4 flex-1">
+                  {['AI Code Explanation', 'Run Code (Python, JS)', 'File Upload', 'Code Generation', 'Codebase Map', 'Game Generation', 'Priority Support'].map((f) => (
+                    <li key={f} className="flex items-center gap-3 text-slate-700 text-sm">
+                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 text-xs font-bold">✓</span> {f}
+                    </li>
+                  ))}
+                </ul>
+                <button onClick={() => handleSubscribe('ultimate')} disabled={isLoading} className="mt-6 w-full py-3.5 rounded-xl font-semibold text-white bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 shadow-lg shadow-indigo-600/20 transition-all">
+                  Get Started
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

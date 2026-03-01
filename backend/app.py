@@ -14,7 +14,8 @@ import re
 import zipfile
 from io import BytesIO
 
-load_dotenv()
+_base = os.path.dirname(os.path.abspath(__file__))
+load_dotenv(os.path.join(_base, ".env"))
 
 GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID")
 GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
@@ -1373,6 +1374,54 @@ def _run_via_piston(language, code, stdin_text=""):
             continue
     print("[piston] All URLs failed - C/C++/Java need gcc/g++/javac installed")
     return None
+
+
+@app.route("/api/create-checkout-session", methods=["POST"])
+def create_checkout_session():
+    """
+    Create Stripe Checkout session for demo payments.
+    Expects JSON: { "successUrl": "...", "cancelUrl": "..." } (optional)
+    Returns: { "url": "https://checkout.stripe.com/..." } or { "error": "..." }
+    """
+    stripe_key = (os.getenv("STRIPE_SECRET_KEY") or "").strip()
+    if not stripe_key or not stripe_key.startswith("sk_"):
+        return jsonify({"error": "Payment temporarily unavailable"}), 503
+
+    try:
+        import stripe
+        stripe.api_key = stripe_key
+    except ImportError:
+        return jsonify({"error": "Stripe package not installed. Run: pip install stripe"}), 500
+
+    data = request.get_json() or {}
+    frontend_base = (os.getenv("FRONTEND_URL") or data.get("frontendBase") or request.origin or "http://localhost:5173").rstrip("/")
+    success_url = data.get("successUrl") or f"{frontend_base}/?payment=success"
+    cancel_url = data.get("cancelUrl") or f"{frontend_base}/?payment=cancelled"
+    plan = data.get("plan") or "pro"
+    # Plans: free=0 (no checkout), pro=999, ultimate=1999 (cents)
+    plans = {"free": (0, "Free", "N/A"), "pro": (999, "CodeFlow Pro", "Full access - Generate, Map, Explain"), "ultimate": (1999, "CodeFlow Ultimate", "Everything + Games, Priority support")}
+    amount, name, desc = plans.get(plan, plans["pro"])
+    if amount == 0:
+        return jsonify({"error": "Free tier - no payment required"}), 400
+
+    try:
+        session = stripe.checkout.Session.create(
+            mode="payment",
+            line_items=[{
+                "price_data": {
+                    "currency": "usd",
+                    "product_data": {"name": name, "description": desc + " (Demo - no real charges)", "images": []},
+                    "unit_amount": amount,
+                },
+                "quantity": 1,
+            }],
+            success_url=success_url,
+            cancel_url=cancel_url,
+        )
+        return jsonify({"url": session.url})
+    except Exception as e:
+        print(f"[Stripe] {e}")
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/api/test-cloud", methods=["GET"])
