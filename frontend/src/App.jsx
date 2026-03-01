@@ -266,9 +266,19 @@ function App() {
     <div className="min-h-screen text-slate-800">
       <TutorialTour ref={tutorialRef} setActiveTab={setActiveTab} TABS={TABS} />
       {paymentStatus === 'success' && (
-        <div className="bg-emerald-500 text-white px-4 py-2 text-center text-sm font-medium flex items-center justify-center gap-2">
-          ✓ Payment demo completed successfully!
-          <button onClick={() => setPaymentStatus(null)} className="ml-2 underline">Dismiss</button>
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={() => setPaymentStatus(null)}>
+          <div className="bg-white rounded-3xl shadow-2xl p-12 max-w-md w-full text-center" onClick={(e) => e.stopPropagation()}>
+            <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-emerald-100 flex items-center justify-center">
+              <svg className="w-14 h-14 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 mb-2">Success</h2>
+            <p className="text-slate-600 mb-8">Payment completed successfully. Thank you!</p>
+            <button onClick={() => setPaymentStatus(null)} className="w-full py-3 px-6 rounded-xl font-semibold text-white bg-emerald-600 hover:bg-emerald-500 transition-colors">
+              Continue
+            </button>
+          </div>
         </div>
       )}
       {paymentStatus === 'cancelled' && (
