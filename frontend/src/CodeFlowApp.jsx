@@ -515,7 +515,7 @@ export default function CodeFlowApp() {
               <div className="bg-slate-50/80 rounded-2xl border border-slate-200 p-6 flex flex-col transition-all hover:border-slate-300 hover:shadow-md">
                 <h3 className="text-lg font-bold text-slate-800">Ultimate</h3>
                 <div className="mt-5">
-                  <span className="text-3xl font-bold text-indigo-600">$19.99</span>
+                  <span className="text-3xl font-bold text-indigo-600">$12.99</span>
                 </div>
                 <p className="text-sm text-slate-500 mt-1">One time payment</p>
                 <ul className="mt-6 space-y-4 flex-1">

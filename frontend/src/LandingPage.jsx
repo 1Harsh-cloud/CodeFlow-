@@ -158,7 +158,7 @@ export default function LandingPage() {
         .landing-hero p {
           font-size: 1.15rem; color: var(--landing-muted); font-weight: 400;
           max-width: 560px; line-height: 1.7; margin: 1.8rem auto 0;
-          font-family: 'DM Mono', monospace;
+          font-family: 'Space Grotesk', system-ui, sans-serif;
           animation: landingFadeUp 0.8s 0.5s ease both;
         }
         .landing-hero-actions {
@@ -217,8 +217,8 @@ export default function LandingPage() {
         .landing-dot-r { width:10px;height:10px;border-radius:50%;background:#ff5f57; }
         .landing-dot-y { width:10px;height:10px;border-radius:50%;background:#febc2e; }
         .landing-dot-g { width:10px;height:10px;border-radius:50%;background:#28c840; }
-        .landing-terminal-title { font-family:'DM Mono',monospace; font-size:0.78rem; color:var(--landing-muted); margin-left:0.5rem; }
-        .landing-terminal-body { padding: 1.5rem 2rem; text-align: left; font-family: 'DM Mono', monospace; font-size: 0.85rem; line-height: 2; background: #fafbff; }
+        .landing-terminal-title { font-family: 'JetBrains Mono', monospace; font-size:0.78rem; color:var(--landing-muted); margin-left:0.5rem; }
+        .landing-terminal-body { padding: 1.5rem 2rem; text-align: left; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 2; background: #fafbff; }
         .landing-t-comment { color: #94a3b8; }
         .landing-t-keyword { color: #a855f7; }
         .landing-t-fn { color: #6366f1; }
@@ -229,7 +229,7 @@ export default function LandingPage() {
         .landing-section { position: relative; z-index: 1; }
         .landing-features { padding: 8rem 4rem; max-width: 1200px; margin: 0 auto; }
         .landing-section-label {
-          font-family: 'DM Mono', monospace; font-size: 0.75rem;
+          font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 0.75rem;
           color: var(--landing-accent); letter-spacing: 0.2em; text-transform: uppercase;
           margin-bottom: 1rem;
         }
@@ -276,7 +276,7 @@ export default function LandingPage() {
         .landing-icon-green { background: rgba(236,72,153,0.1); }
         .landing-icon-orange { background: rgba(249,115,22,0.12); }
         .landing-feature-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.6rem; }
-        .landing-feature-card p { color: var(--landing-muted); font-size: 0.9rem; line-height: 1.6; font-family: 'DM Mono', monospace; font-weight: 300; }
+        .landing-feature-card p { color: var(--landing-muted); font-size: 0.9rem; line-height: 1.6; font-family: 'Space Grotesk', system-ui, sans-serif; font-weight: 300; }
         .landing-feature-tag {
           display: inline-block; margin-top: 1rem;
           background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.2);
@@ -297,7 +297,7 @@ export default function LandingPage() {
           background: linear-gradient(135deg, #6366f1, #ec4899);
           -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-        .landing-stat-label { color: var(--landing-muted); font-size: 0.85rem; margin-top: 0.4rem; font-family: 'DM Mono', monospace; }
+        .landing-stat-label { color: var(--landing-muted); font-size: 0.85rem; margin-top: 0.4rem; font-family: 'Space Grotesk', system-ui, sans-serif; }
         .landing-how { padding: 8rem 4rem; max-width: 1200px; margin: 0 auto; }
         .landing-steps {
           display: grid; grid-template-columns: repeat(3,1fr);
@@ -315,14 +315,14 @@ export default function LandingPage() {
           background: white; border: 2px solid rgba(99,102,241,0.3);
           display: flex; align-items: center; justify-content: center;
           margin: 0 auto 1.5rem; font-size: 1.2rem; font-weight: 800;
-          color: var(--landing-accent); font-family: 'DM Mono', monospace;
+          color: var(--landing-accent); font-family: 'Space Grotesk', system-ui, sans-serif;
           position: relative; z-index: 1; box-shadow: 0 4px 15px rgba(99,102,241,0.1);
         }
         .landing-step h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.6rem; }
-        .landing-step p { color: var(--landing-muted); font-size: 0.88rem; line-height: 1.6; font-family: 'DM Mono', monospace; }
+        .landing-step p { color: var(--landing-muted); font-size: 0.88rem; line-height: 1.6; font-family: 'Space Grotesk', system-ui, sans-serif; }
         .landing-pricing { padding: 8rem 4rem; max-width: 1200px; margin: 0 auto; text-align: center; }
         .landing-pricing .landing-section-title { margin: 0 auto 1rem; }
-        .landing-pricing-desc { color: var(--landing-muted); font-family: 'DM Mono', monospace; font-size: 0.9rem; margin-bottom: 4rem; }
+        .landing-pricing-desc { color: var(--landing-muted); font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 0.9rem; margin-bottom: 4rem; }
         .landing-pricing-grid {
           display: grid; grid-template-columns: repeat(3,1fr);
           gap: 1.5rem; text-align: left;
@@ -353,7 +353,7 @@ export default function LandingPage() {
         }
         .landing-price-name { font-size: 1rem; font-weight: 700; color: var(--landing-muted); margin-bottom: 0.5rem; }
         .landing-price-amount { font-size: 3rem; font-weight: 800; line-height: 1; margin-bottom: 0.3rem; }
-        .landing-price-desc { font-family: 'DM Mono', monospace; font-size: 0.8rem; color: var(--landing-muted); margin-bottom: 2rem; }
+        .landing-price-desc { font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 0.8rem; color: var(--landing-muted); margin-bottom: 2rem; }
         .landing-price-divider { height: 1px; background: rgba(226,232,240,0.9); margin-bottom: 1.5rem; }
         .landing-price-features { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2rem; }
         .landing-price-features li { display: flex; align-items: center; gap: 0.6rem; font-size: 0.88rem; color: var(--landing-text); }
@@ -388,7 +388,7 @@ export default function LandingPage() {
           background: linear-gradient(135deg, #6366f1, #ec4899);
           -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-        .landing-cta-section p { color: var(--landing-muted); font-family: 'DM Mono', monospace; font-size: 0.95rem; margin-bottom: 2.5rem; line-height: 1.7; }
+        .landing-cta-section p { color: var(--landing-muted); font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 0.95rem; margin-bottom: 2.5rem; line-height: 1.7; }
         .landing-footer {
           border-top: 1px solid rgba(226,232,240,0.8);
           padding: 3rem 4rem;
@@ -396,7 +396,7 @@ export default function LandingPage() {
           position: relative; z-index: 1;
           background: rgba(255,255,255,0.6);
         }
-        .landing-footer p { color: var(--landing-muted); font-family: 'DM Mono', monospace; font-size: 0.8rem; }
+        .landing-footer p { color: var(--landing-muted); font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 0.8rem; }
         .landing-reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
         .landing-reveal.visible { opacity: 1; transform: translateY(0); }
         @media (max-width: 768px) {
@@ -415,7 +415,7 @@ export default function LandingPage() {
       <div className="landing-cursor-ring" id="landing-cursor-ring" />
 
       <nav className="landing-nav">
-        <div className="landing-logo">Code<span style={{ fontFamily: "'DM Mono', monospace", fontWeight: 300 }}>Flow</span></div>
+        <div className="landing-logo">Code<span style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif", fontWeight: 300 }}>Flow</span></div>
         <ul>
           <li><a href="#features">Features</a></li>
           <li><a href="#how">How it works</a></li>
@@ -612,7 +612,7 @@ export default function LandingPage() {
 
           <div className="landing-price-card landing-reveal">
             <div className="landing-price-name">Ultimate</div>
-            <div className="landing-price-amount">$19.99</div>
+            <div className="landing-price-amount">$12.99</div>
             <div className="landing-price-desc">One time payment</div>
             <div className="landing-price-divider" />
             <ul className="landing-price-features">
@@ -636,9 +636,9 @@ export default function LandingPage() {
       </section>
 
       <footer className="landing-footer">
-        <div className="landing-logo">Code<span style={{ fontFamily: "'DM Mono', monospace", fontWeight: 300 }}>Flow</span></div>
+        <div className="landing-logo">Code<span style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif", fontWeight: 300 }}>Flow</span></div>
         <p>© 2026 CodeFlow. Built with ❤️ at Columbia University.</p>
-        <p style={{ color: 'var(--landing-muted)', fontFamily: "'DM Mono', monospace", fontSize: '0.78rem' }}>code-flow-liart.vercel.app</p>
+        <p style={{ color: 'var(--landing-muted)', fontFamily: "'Space Grotesk', system-ui, sans-serif", fontSize: '0.78rem' }}>code-flow-liart.vercel.app</p>
       </footer>
     </div>
   )

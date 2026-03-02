@@ -26,7 +26,7 @@ cd backend && python app.py
 ## 4. Test
 
 1. Open the app → click **Pricing**
-2. Click **Get Started** on Pro ($9.99) or Ultimate ($19.99)
+2. Click **Get Started** on Pro ($9.99) or Ultimate ($12.99)
 3. You’ll be redirected to Stripe Checkout
 4. Use test card: **4242 4242 4242 4242**
    - Expiry: any future date (e.g. 12/34)

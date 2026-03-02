@@ -1398,8 +1398,8 @@ def create_checkout_session():
     success_url = data.get("successUrl") or f"{frontend_base}/?payment=success"
     cancel_url = data.get("cancelUrl") or f"{frontend_base}/?payment=cancelled"
     plan = data.get("plan") or "pro"
-    # Plans: free=0 (no checkout), pro=999, ultimate=1999 (cents)
-    plans = {"free": (0, "Free", "N/A"), "pro": (999, "CodeFlow Pro", "Full access - Generate, Map, Explain"), "ultimate": (1999, "CodeFlow Ultimate", "Everything + Games, Priority support")}
+    # Plans: free=0 (no checkout), pro=999, ultimate=1299 (cents)
+    plans = {"free": (0, "Free", "N/A"), "pro": (999, "CodeFlow Pro", "Full access - Generate, Map, Explain"), "ultimate": (1299, "CodeFlow Ultimate", "Everything + Games, Priority support")}
     amount, name, desc = plans.get(plan, plans["pro"])
     if amount == 0:
         return jsonify({"error": "Free tier - no payment required"}), 400
