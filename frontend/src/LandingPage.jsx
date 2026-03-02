@@ -322,7 +322,15 @@ export default function LandingPage() {
         .landing-step p { color: var(--landing-muted); font-size: 0.88rem; line-height: 1.6; font-family: 'Space Grotesk', system-ui, sans-serif; }
         .landing-pricing { padding: 8rem 4rem; max-width: 1200px; margin: 0 auto; text-align: center; }
         .landing-pricing .landing-section-title { margin: 0 auto 1rem; }
-        .landing-pricing-desc { color: var(--landing-muted); font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 0.9rem; margin-bottom: 4rem; }
+        .landing-pricing-desc { color: var(--landing-muted); font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 0.9rem; margin-bottom: 1rem; }
+        .landing-pricing-free-notice {
+          display: inline-flex; align-items: center; gap: 0.5rem;
+          background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(236,72,153,0.1));
+          border: 1px solid rgba(99,102,241,0.25);
+          border-radius: 100px; padding: 0.6rem 1.5rem;
+          font-size: 0.95rem; font-weight: 600; color: var(--landing-accent);
+          margin-bottom: 4rem;
+        }
         .landing-pricing-grid {
           display: grid; grid-template-columns: repeat(3,1fr);
           gap: 1.5rem; text-align: left;
@@ -575,6 +583,7 @@ export default function LandingPage() {
         <div className="landing-section-label landing-reveal" style={{ textAlign: 'center' }}>Pricing</div>
         <div className="landing-section-title landing-reveal">Invest in Your Code, <span>Not Guesswork</span></div>
         <div className="landing-pricing-desc landing-reveal">One-time payment. No subscriptions. No surprises.</div>
+        <div className="landing-pricing-free-notice landing-reveal">🎉 For now, it's free to use everything. Don't worry! Just jump in and explore.</div>
 
         <div className="landing-pricing-grid">
           <div className="landing-price-card landing-reveal">

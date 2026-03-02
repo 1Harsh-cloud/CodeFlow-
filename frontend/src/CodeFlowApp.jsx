@@ -463,6 +463,7 @@ export default function CodeFlowApp() {
               <h2 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Invest in Your Code, Not in Guesswork</h2>
               <button onClick={() => setShowPricing(false)} className="p-2 -m-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors text-xl">×</button>
             </div>
+            <p className="text-indigo-600 font-semibold text-sm mb-4 text-center bg-indigo-50 py-2.5 px-4 rounded-xl">🎉 For now, it's free to use everything. Don't worry! Just jump in and explore.</p>
             {(error || pricingError) && <p className="text-red-500 text-sm mb-6 text-center">{pricingError || error}</p>}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
               <div className="bg-slate-50/80 rounded-2xl border border-slate-200 p-6 flex flex-col transition-all hover:border-slate-300 hover:shadow-md">
